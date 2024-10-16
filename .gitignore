@@ -6,6 +6,7 @@
 bin/*/
 lib/*/
 obj
+~hbmk/
 .hbmk/
 *.hbl
 *.hbd

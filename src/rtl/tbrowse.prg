@@ -56,6 +56,7 @@
 #include "inkey.ch"
 #include "setcurs.ch"
 #include "tbrowse.ch"
+#include "hbgtinfo.ch"
 
 /* HB_BRW_STATICMOUSE controls if mouse position is static
  * and set by call to HitTest() method or dynamic calculated
@@ -335,6 +336,7 @@ STATIC PROCEDURE _DISP_FHSEP( nRow, nType, cColor, aColData )
    LOCAL nWidth
    LOCAL lFirst := .T.
    LOCAL lFirstVisible := .T.
+   LOCAL cOldCP:=hb_cdpSelect(hb_gtInfo( HB_GTI_BOXCP ))
 
    FOR EACH aCol IN aColData
       IF aCol[ _TBCI_COLPOS ] != NIL
@@ -391,6 +393,7 @@ STATIC PROCEDURE _DISP_FHSEP( nRow, nType, cColor, aColData )
          lFirst := .F.
       ENDIF
    NEXT
+   hb_cdpSelect( cOldCP )
 
    RETURN
 
@@ -1318,7 +1321,7 @@ METHOD doConfigure() CLASS TBrowse
       aCol[ _TBCI_CELLWIDTH   ] := nWidth
       aCol[ _TBCI_CELLPOS     ] := 0
       aCol[ _TBCI_COLSEP      ] := cColSep
-      aCol[ _TBCI_SEPWIDTH    ] := Len( cColSep )
+      aCol[ _TBCI_SEPWIDTH    ] := IIF(hb_cdpIsUTF8(hb_gtInfo( HB_GTI_BOXCP )), hb_utf8Len( cColSep ), hb_BLen( cColSep ) )
       aCol[ _TBCI_HEADSEP     ] := cHeadSep
       aCol[ _TBCI_FOOTSEP     ] := cFootSep
       aCol[ _TBCI_DEFCOLOR    ] := _COLDEFCOLORS( oCol:defColor, Len( ::aColors ) )
