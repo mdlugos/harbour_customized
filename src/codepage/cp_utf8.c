@@ -103,13 +103,24 @@ static HB_CDP_LEN_FUNC( UTF8_len )
    return hb_cdpUTF8CharSize( wc );
 }
 
+static const HB_UCHAR ub[0x01F0 + 1] = "AAAAAAACEEEEIIIIDNOOOOO OUUUUY  AAAAAAACEEEEIIIIDNOOOOO OUUUUY YAAAAAACCCCCCCCDDDDEEEEEEEEEEGGGGGGGGHHHHIIIIIIIIIIIIJJKKKLLLLLLLLLLNNNNNNNNNOOOOOOOORRRRRRSSSSSSSSTTTTTTUUUUUUUUUUUUWWYYYZZZZZZSBBBBHHOCCDDDDDEEEFFGGHIIKKLLMNNOOOOOPPZSSSTTTTTUUVVYYZZZZZZ         DDDLLLNNNAAIIOOUUUUUUUUUUEAAAAAAGGGGKKOOOOZZJDDDGGH NNAAAAOOAAAAEEEEIIIIOOOORRRRUUUUSSTTYYHHNDOOZZAAEEOOOOOOOOYYLNTJDQACCLTSZ  BUVEEJJQQRRYYAAABOCDDEEEEEEEJGGGGGHHHIIILLLLMMNNNNOO  RRRRRRRRRSSJSSTTUUVVWYYZZZZ   C BEGHJKLQ  DDDTTTFLL  HH";
+//0C0-2AF                           ÀÁÂÃÄÅÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÛÜÝÞßàáâãäåæçèéêëìíîïðñòóôõö÷øùúûüýþÿĀāĂăĄąĆćĈĉĊċČčĎďĐđĒēĔĕĖėĘęĚěĜĝĞğĠġĢģĤĥĦħĨĩĪīĬĭĮįİıĲĳĴĵĶķĸĹĺĻļĽľĿŀŁłŃńŅņŇňŉŊŋŌōŎŏŐőŒœŔŕŖŗŘřŚśŜŝŞşŠšŢţŤťŦŧŨũŪūŬŭŮůŰűŲųŴŵŶŷŸŹźŻżŽžſƀƁƂƃƄƅƆƇƈƉƊƋƌƍƎƏƐƑƒƓƔƕƖƗƘƙƚƛƜƝƞƟƠơƢƣƤƥƦƧƨƩƪƫƬƭƮƯưƱƲƳƴƵƶƷƸƹƺƻƼƽƾƿǀǁǂǃǄǅǆǇǈǉǊǋǌǍǎǏǐǑǒǓǔǕǖǗǘǙǚǛǜǝǞǟǠǡǢǣǤǥǦǧǨǩǪǫǬǭǮǯǰǱǲǳǴǵǶǷǸǹǺǻǼǽǾǿȀȁȂȃȄȅȆȇȈȉȊȋȌȍȎȏȐȑȒȓȔȕȖȗȘșȚțȜȝȞȟȠȡȢȣȤȥȦȧȨȩȪȫȬȭȮȯȰȱȲȳȴȵȶȷȸȹȺȻȼȽȾȿɀɁɂɃɄɅɆɇɈɉɊɋɌɍɎɏɐɑɒɓɔɕɖɗɘəɚɛɜɝɞɟɠɡɢɣɤɥɦɧɨɩɪɫɬɭɮɯɰɱɲɳɴɵɶɷɸɹɺɻɼɽɾɿʀʁʂʃʄʅʆʇʈʉʊʋʌʍʎʏʐʑʒʓʔʕʖʗʘʙʚʛʜʝʞʟʠʡʢʣʤʥʦʧʨʩʪʫʬʭʮʯ
+static const HB_UCHAR uc[0x0100 + 1] = "AABBBBBBCCDDDDDDDDDDEEEEEEEEEEFFGGHHHHHHHHHHIIIIKKKKKKLLLLLLLLMMMMMMNNNNNNNNOOOOOOOOPPPPRRRRRRRRSSSSSSSSSSTTTTTTTTUUUUUUUUUUVVVVWWWWWWWWWWXXXXYYZZZZZZHTWYASSSSDAAAAAAAAAAAAAAAAAAAAAAAAEEEEEEEEEEEEEEEEIIIIOOOOOOOOOOOOOOOOOOOOOOOOUUUUUUUUUUUUUUYYYYYYYYLLVVYY";
+//1E00-1EFF                        
 static HB_CDP_UPPER_FUNC( UTF8_upper )
 {
-   HB_WCHAR wcUP;
+   HB_WCHAR wcUP = 0x20; //space
 
    HB_SYMBOL_UNUSED( cdp );
 
-   wcUP = s_uc_upper( wc );
+   if ((wc >= 0x00C0) && (wc <= 0x02AF))
+      wcUP = ub[wc - 0x00C0];
+   else if ((wc >= 0x1E00) && (wc <= 0x1EFF))
+      wcUP = uc[wc - 0x1E00];
+
+   if (wcUP == 0x20)
+      wcUP = s_uc_upper( wc );
+
    return wcUP ? wcUP : wc;
 }
 

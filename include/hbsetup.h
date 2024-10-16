@@ -67,7 +67,7 @@
  */
 
 #ifndef HB_LANG_DEFAULT
-   #define HB_LANG_DEFAULT       EN
+   #define HB_LANG_DEFAULT       PL
 #endif
 
 /*
@@ -76,7 +76,7 @@
  */
 
 #ifndef HB_CODEPAGE_DEFAULT
-   #define HB_CODEPAGE_DEFAULT   EN
+   #define HB_CODEPAGE_DEFAULT   PL852
 #endif
 
 /*
