@@ -203,16 +203,4 @@ UNSIGNED32 ENTRYPOINT AdsGetFieldRaw( ADSHANDLE    hTbl,
                                        UNSIGNED8 *  pucFldName,
                                        UNSIGNED8 *  pucBuf,
                                        UNSIGNED32 * pulLen );
-
-#ifdef ADS_USE_OEM_TRANSLATION
-   extern HB_BOOL hb_ads_bOEM;
-   extern char *  hb_adsOemToAnsi( const char * pcString, HB_SIZE nLen );
-   extern char *  hb_adsAnsiToOem( const char * pcString, HB_SIZE nLen );
-   extern void    hb_adsOemAnsiFree( char * pcString );
-#else
-#  define hb_adsOemToAnsi( s, l )  ( ( char * ) HB_UNCONST( s ) )
-#  define hb_adsAnsiToOem( s, l )  ( ( char * ) HB_UNCONST( s ) )
-#  define hb_adsOemAnsiFree( s )
-#endif
-
 HB_EXTERN_END

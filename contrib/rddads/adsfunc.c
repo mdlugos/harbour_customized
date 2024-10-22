@@ -65,74 +65,6 @@ int     hb_ads_iCheckRights  = ADS_CHECKRIGHTS;
 int     hb_ads_iCharType     = ADS_ANSI;
 HB_BOOL hb_ads_bTestRecLocks = HB_FALSE;               /* Debug Implicit locks */
 
-#ifdef ADS_USE_OEM_TRANSLATION
-
-HB_BOOL hb_ads_bOEM = HB_FALSE;
-
-char * hb_adsOemToAnsi( const char * pszSrc, HB_SIZE nLen )
-{
-   if( hb_ads_bOEM )
-   {
-#if defined( HB_OS_WIN )
-      int nWideLen = MultiByteToWideChar( CP_OEMCP, MB_PRECOMPOSED, pszSrc, ( int ) nLen, NULL, 0 );
-      LPWSTR pszWide = ( LPWSTR ) hb_xgrab( ( nWideLen + 1 ) * sizeof( wchar_t ) );
-
-      char * pszDst;
-
-      MultiByteToWideChar( CP_OEMCP, MB_PRECOMPOSED, pszSrc, ( int ) nLen, pszWide, nWideLen );
-
-      nLen = WideCharToMultiByte( CP_ACP, 0, pszWide, nWideLen, NULL, 0, NULL, NULL );
-      pszDst = ( char * ) hb_xgrab( nLen + 1 );
-
-      WideCharToMultiByte( CP_ACP, 0, pszWide, nWideLen, pszDst, ( int ) nLen, NULL, NULL );
-
-      hb_xfree( pszWide );
-
-      pszDst[ nLen ] = '\0';
-      return pszDst;
-#else
-      HB_SYMBOL_UNUSED( nLen );
-#endif
-   }
-   return ( char * ) HB_UNCONST( pszSrc );
-}
-
-char * hb_adsAnsiToOem( const char * pszSrc, HB_SIZE nLen )
-{
-   if( hb_ads_bOEM )
-   {
-#if defined( HB_OS_WIN )
-      int nWideLen = MultiByteToWideChar( CP_ACP, MB_PRECOMPOSED, pszSrc, ( int ) nLen, NULL, 0 );
-      LPWSTR pszWide = ( LPWSTR ) hb_xgrab( ( nWideLen + 1 ) * sizeof( wchar_t ) );
-
-      char * pszDst;
-
-      MultiByteToWideChar( CP_ACP, MB_PRECOMPOSED, pszSrc, ( int ) nLen, pszWide, nWideLen );
-
-      nLen = WideCharToMultiByte( CP_OEMCP, 0, pszWide, nWideLen, NULL, 0, NULL, NULL );
-      pszDst = ( char * ) hb_xgrab( nLen + 1 );
-
-      WideCharToMultiByte( CP_OEMCP, 0, pszWide, nWideLen, pszDst, ( int ) nLen, NULL, NULL );
-
-      hb_xfree( pszWide );
-
-      pszDst[ nLen ] = '\0';
-      return pszDst;
-#else
-      HB_SYMBOL_UNUSED( nLen );
-#endif
-   }
-   return ( char * ) HB_UNCONST( pszSrc );
-}
-
-void hb_adsOemAnsiFree( char * pszSrc )
-{
-   if( hb_ads_bOEM )
-      hb_xfree( pszSrc );
-}
-
-#endif
-
 typedef struct
 {
    ADSHANDLE hConnect;
@@ -481,11 +413,6 @@ HB_FUNC( ADSSETCHARTYPE )
       if( charType >= ADS_ANSI && charType <= ADS_OEM )
 #endif
          hb_ads_iCharType = charType;
-
-#ifdef ADS_USE_OEM_TRANSLATION
-      if( HB_ISLOG( 2 ) )
-         hb_ads_bOEM = hb_parl( 2 );
-#endif
    }
 }
 
@@ -855,13 +782,18 @@ HB_FUNC( ADSEVALAOF )
 
       if( HB_ISCHAR( 1 ) )
       {
-         char * pucFilter = hb_adsOemToAnsi( hb_parc( 1 ), hb_parclen( 1 ) );
+         char * pucFilter = ( char * ) HB_UNCONST( hb_parc( 1 ) );
+         char * pszFree = NULL;
 
-         AdsEvalAOF( pArea->hTable,
-                     ( UNSIGNED8 * ) pucFilter,
-                     &pusOptLevel );
+         if ( pArea->area.cdPage != hb_vmCDP() )
+         {
+            HB_SIZE nLen = hb_parclen( 1 );
+            pszFree = pucFilter = hb_cdpnDup( ( const char * ) pucFilter, &nLen, hb_vmCDP(), pArea->area.cdPage );
+         }
+         AdsEvalAOF( pArea->hTable, ( UNSIGNED8 * ) pucFilter, &pusOptLevel );
 
-         hb_adsOemAnsiFree( pucFilter );
+         if ( pszFree ) 
+            hb_xfree( pszFree );
       }
 
       hb_retni( pusOptLevel );
@@ -914,9 +846,18 @@ HB_FUNC( ADSGETAOF )
 
       if( ulRetVal == AE_SUCCESS )
       {
-         char * szRet = hb_adsAnsiToOem( ( char * ) ( pucFilter2 ? pucFilter2 : pucFilter ), usLen );
+         char * szRet = ( char * ) ( pucFilter2 ? pucFilter2 : pucFilter );
+         char * pszFree = NULL;
+         if ( pArea->area.cdPage != hb_vmCDP() )
+         {
+            HB_SIZE nLen = usLen;
+            pszFree = szRet = hb_cdpnDup( ( const char * ) pszFree, &nLen, pArea->area.cdPage, hb_vmCDP() );
+         }
+
          hb_retc( szRet );
-         hb_adsOemAnsiFree( szRet );
+
+         if( pszFree )
+            hb_xfree( pszFree );
       }
       else
          hb_retc_null();
@@ -1038,13 +979,22 @@ HB_FUNC( ADSSETAOF )
 
       if( pArea )
       {
-         char * pucFilter = hb_adsOemToAnsi( hb_parc( 1 ), hb_parclen( 1 ) );
+
+         char * pucFilter = ( char * ) HB_UNCONST ( hb_parc( 1 ) );
+         char * pszFree = NULL;
+
+         if ( pArea->area.cdPage != hb_vmCDP() )
+         {
+            HB_SIZE nLen = hb_parclen( 1 );
+            pszFree = pucFilter = hb_cdpnDup( ( const char * ) pucFilter, &nLen, hb_vmCDP(), pArea->area.cdPage );
+         }
 
          UNSIGNED32 ulRetVal = AdsSetAOF( pArea->hTable,
                                           ( UNSIGNED8 * ) pucFilter,
                                           ( UNSIGNED16 ) ( hb_pcount() > 1 ? hb_parni( 2 ) : ADS_RESOLVE_DYNAMIC ) /* usResolve */ ); /* ADS_RESOLVE_IMMEDIATE */
 
-         hb_adsOemAnsiFree( pucFilter );
+         if ( pszFree ) 
+            hb_xfree( pszFree );
 
          hb_retl( ulRetVal == AE_SUCCESS );
       }
@@ -1079,9 +1029,19 @@ HB_FUNC( ADSGETFILTER )
 
       if( ulRetVal == AE_SUCCESS )
       {
-         char * szRet = hb_adsAnsiToOem( ( char * ) ( pucFilter2 ? pucFilter2 : pucFilter ), usLen );
+
+         char * szRet = ( char * ) ( pucFilter2 ? pucFilter2 : pucFilter ); 
+         char * pszFree = NULL;
+         if ( pArea->area.cdPage != hb_vmCDP() )
+         {
+            HB_SIZE nLen = usLen;
+            pszFree = szRet = hb_cdpnDup( ( const char * ) pszFree, &nLen, pArea->area.cdPage, hb_vmCDP() );
+         }
+
          hb_retc( szRet );
-         hb_adsOemAnsiFree( szRet );
+
+         if( pszFree )
+            hb_xfree( pszFree );
       }
       else
       {
