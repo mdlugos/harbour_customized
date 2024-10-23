@@ -5482,7 +5482,7 @@ static HB_ERRCODE adsRddInfo( LPRDDNODE pRDD, HB_USHORT uiIndex, HB_ULONG ulConn
          {
             ADSHANDLE hCursor = 0;
 
-            AdsStmtSetTableType( hStatement, ( HB_USHORT ) adsGetFileType( pRDD->rddID ) );
+            AdsStmtSetTableType( hStatement, adsGetFileType( pRDD->rddID ) );
 
             u32RetVal = AdsExecuteSQLDirect( hStatement, ( UNSIGNED8 * ) hb_itemGetCPtr( pItem ), &hCursor );
             if( u32RetVal == AE_SUCCESS )
