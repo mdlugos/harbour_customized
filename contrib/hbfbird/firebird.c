@@ -662,22 +662,13 @@ HB_FUNC( FBGETDATA )
                break;
             }
             case SQL_FLOAT:
-               //hb_snprintf( data, sizeof( data ), "%15g ", *( float * ) ( var->sqldata ) );
-               //hb_retc( data );
-               {
-               double value = *( float * ) ( var->sqldata );
-               hb_retnd(value);
-               }
+               hb_snprintf( data, sizeof( data ), "%15g ", *( float * ) ( var->sqldata ) );
+               hb_retc( data );
                break;
 
             case SQL_DOUBLE:
-               //hb_snprintf( data, sizeof( data ), "%24f ", *( double * ) ( var->sqldata ) );
-               //hb_retc( data );
-               hb_retnd(*( double * ) ( var->sqldata ) );
-               break;
-
-            case SQL_BOOLEAN:
-               hb_retl(( FB_BOOLEAN ) * var->sqldata);
+               hb_snprintf( data, sizeof( data ), "%24f ", *( double * ) ( var->sqldata ) );
+               hb_retc( data );
                break;
 
             default:
