@@ -2200,27 +2200,33 @@ static HB_ERRCODE adsGetValue( ADSAREAP pArea, HB_USHORT uiIndex, PHB_ITEM pItem
 #endif
          else
          {
-            u32RetVal = AdsGetFieldRaw( pArea->hTable, ADSFIELD( uiIndex ), pBuffer, &u32Length );
-            if( u32RetVal == AE_INSUFFICIENT_BUFFER && pField->uiType == HB_FT_VARLENGTH )
+            if (pField->uiType == HB_FT_VARLENGTH) 
             {
-               UNSIGNED8 * pucBuf = ( UNSIGNED8 * ) hb_xgrab( u32Length );
-               u32RetVal = AdsGetFieldRaw( pArea->hTable, ADSFIELD( uiIndex ), pucBuf, &u32Length );
-               if( u32RetVal == AE_SUCCESS )
+               // respect length last byte
+               u32RetVal = AdsGetField( pArea->hTable, ADSFIELD( uiIndex ), pBuffer, &u32Length, ADS_NONE );
+               if( u32RetVal == AE_INSUFFICIENT_BUFFER )
                {
-                  if( ( pField->uiFlags & HB_FF_BINARY ) == 0 && pArea->area.cdPage != hb_vmCDP() )
+                  UNSIGNED8 * pucBuf = ( UNSIGNED8 * ) hb_xgrab( u32Length );
+                  u32RetVal = AdsGetField( pArea->hTable, ADSFIELD( uiIndex ), pucBuf, &u32Length, ADS_NONE );
+                  if( u32RetVal == AE_SUCCESS )
                   {
-                     HB_SIZE nLen = u32Length;
-                     char * pszVal = hb_cdpnDup( ( const char * ) pucBuf, &nLen, pArea->area.cdPage, hb_vmCDP() );
-                     hb_xfree( pucBuf );
-                     hb_itemPutCLPtr( pItem, pszVal, nLen );
-                  }
-                  else 
-                     hb_itemPutCLPtr( pItem, ( char * ) pucBuf, u32Length );
+                     if( ( pField->uiFlags & HB_FF_BINARY ) == 0 && pArea->area.cdPage != hb_vmCDP() )
+                     {
+                        HB_SIZE nLen = u32Length;
+                        char * pszVal = hb_cdpnDup( ( const char * ) pucBuf, &nLen, pArea->area.cdPage, hb_vmCDP() );
+                        hb_xfree( pucBuf );
+                        hb_itemPutCLPtr( pItem, pszVal, nLen );
+                     }
+                     else 
+                        hb_itemPutCLPtr( pItem, ( char * ) pucBuf, u32Length );
 
-                  break;
+                     break;
+                  }
+                  hb_xfree( pucBuf );
                }
-               hb_xfree( pucBuf );
             }
+            else //avoid OEM/ANSI translation
+               u32RetVal = AdsGetFieldRaw( pArea->hTable, ADSFIELD( uiIndex ), pBuffer, &u32Length );
          }
 
          if( ! pArea->fPositioned || u32RetVal != AE_SUCCESS )
@@ -2240,7 +2246,7 @@ static HB_ERRCODE adsGetValue( ADSAREAP pArea, HB_USHORT uiIndex, PHB_ITEM pItem
             hb_itemPutCLPtr( pItem, pszVal, nLen );
          }
          else 
-         hb_itemPutCL( pItem, ( char * ) pBuffer, u32Length );
+            hb_itemPutCL( pItem, ( char * ) pBuffer, u32Length );
          break;
 
       case HB_FT_TIME:
@@ -2662,8 +2668,11 @@ static HB_ERRCODE adsPutValue( ADSAREAP pArea, HB_USHORT uiIndex, PHB_ITEM pItem
             else
 #endif
             {
-               const char * pszVal = hb_itemGetCPtr( pItem );
+               char * pszVal = ( char * ) HB_UNCONST( hb_itemGetCPtr( pItem ) );
+               char * pszFree = NULL;
                nLen = hb_itemGetCLen( pItem );
+               if( ( pField->uiFlags & HB_FF_BINARY ) == 0 && pArea->area.cdPage != hb_vmCDP() )
+                  pszVal = pszFree = hb_cdpnDup( ( const char * ) pszVal, &nLen, hb_vmCDP(), pArea->area.cdPage );
                if( nLen > ( HB_SIZE ) pField->uiLen )
                {
 #if ADS_LIB_VERSION >= 900
@@ -2676,19 +2685,13 @@ static HB_ERRCODE adsPutValue( ADSAREAP pArea, HB_USHORT uiIndex, PHB_ITEM pItem
                      /* maximum VarChar field size is 64000 */
                      nLen = 64000;
                }
-               if( ( pField->uiFlags & HB_FF_BINARY ) == 0 && pArea->area.cdPage != hb_vmCDP())
-               {
-                  char * psztVal = hb_cdpnDup( pszVal, &nLen, hb_vmCDP(), pArea->area.cdPage );
-                  if( nLen > ( HB_SIZE ) pField->uiLen && pField->uiType == HB_FT_STRING )
-                     nLen = pField->uiLen;
-
-                  u32RetVal = AdsSetFieldRaw( pArea->hTable, ADSFIELD( uiIndex ),
-                                         ( UNSIGNED8 * ) psztVal,
-                                         ( UNSIGNED32 ) nLen );
-                  hb_xfree( psztVal );
-               }
-               else
+               if ( pField->uiType == HB_FT_VARLENGTH ) // sets last bytee as length
+                  u32RetVal = AdsSetField( pArea->hTable, ADSFIELD( uiIndex ), ( UNSIGNED8 * ) pszVal, ( UNSIGNED32 ) nLen );
+               else // ignores OEM/ANSI translation for not BINARY fields
                   u32RetVal = AdsSetFieldRaw( pArea->hTable, ADSFIELD( uiIndex ), ( UNSIGNED8 * ) pszVal, ( UNSIGNED32 ) nLen );
+
+               if( pszFree )
+                  hb_xfree( pszFree );
             }
             /* varchar unicode fields in ADT tables and varchar/varbinary
                fields in VFP DBFs have fixed size so we should ignore this
@@ -2806,13 +2809,13 @@ static HB_ERRCODE adsPutValue( ADSAREAP pArea, HB_USHORT uiIndex, PHB_ITEM pItem
                if( pArea->area.cdPage != hb_vmCDP() )
                {
                   char * psztVal = hb_cdpnDup( pszVal, &nLen, hb_vmCDP(), pArea->area.cdPage );
-                  u32RetVal = AdsSetFieldRaw( pArea->hTable, ADSFIELD( uiIndex ),
+                  u32RetVal = AdsSetField( pArea->hTable, ADSFIELD( uiIndex ),
                                          ( UNSIGNED8 * ) psztVal,
                                          ( UNSIGNED32 ) nLen );
                   hb_xfree( psztVal );
                }
                else 
-                  u32RetVal = AdsSetFieldRaw( pArea->hTable, ADSFIELD( uiIndex ),
+                  u32RetVal = AdsSetField( pArea->hTable, ADSFIELD( uiIndex ),
                                          ( UNSIGNED8 * ) pszVal,
                                          ( UNSIGNED32 ) nLen );
             }
