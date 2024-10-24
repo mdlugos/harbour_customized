@@ -142,6 +142,7 @@ typedef struct _ADSAREA_
    HB_BOOL fFLocked;              /* HB_TRUE if file is locked */
 
    int iFileType;                 /* adt/cdx/ntx/vfp */
+   int iCharType;                 /* ANSI/OEM */
 
    ADSHANDLE hTable;
    ADSHANDLE hOrdCurrent;
@@ -192,6 +193,10 @@ extern void       hb_ads_setIndexPageSize( int iIndexPageSize );
 extern HB_ERRCODE hb_adsCloseCursor( ADSAREAP pArea );
 extern ADSAREAP   hb_adsGetWorkAreaPointer( void );
 
+extern char * hb_adsOemToAnsi( const char * pszSrc, UNSIGNED32 * pnLen, ADSAREAP pArea, HB_BOOL bOEM );
+extern char * hb_adsAnsiToOem( const char * pszSrc, UNSIGNED32 * pnLen, ADSAREAP pArea, HB_BOOL bOEM );
+extern HB_BOOL hb_adsOemAnsiFree( const char * pszSrc, char * pszDest );
+
 /* NOTE: Undocumented ACE function. */
 UNSIGNED32 ENTRYPOINT AdsSetFieldRaw( ADSHANDLE   hObj,
                                        UNSIGNED8 * pucFldName,
@@ -203,4 +208,5 @@ UNSIGNED32 ENTRYPOINT AdsGetFieldRaw( ADSHANDLE    hTbl,
                                        UNSIGNED8 *  pucFldName,
                                        UNSIGNED8 *  pucBuf,
                                        UNSIGNED32 * pulLen );
+
 HB_EXTERN_END
