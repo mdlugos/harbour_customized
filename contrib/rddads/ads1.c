@@ -1027,10 +1027,9 @@ static HB_ERRCODE adsSeek( ADSAREAP pArea, HB_BOOL bSoftSeek, PHB_ITEM pKey, HB_
       pszKeyFree = ( UNSIGNED8 * ) HB_UNCONST( hb_itemGetCPtr( pKey ) );
       UNSIGNED32 nLen = hb_itemGetCLen( pKey );
       pszKey = ( UNSIGNED8* ) hb_adsOemToAnsi( ( const char * ) pszKeyFree, &nLen, pArea, HB_FALSE );
+      pszKeyFree = ( pszKey == pszKeyFree ) ? NULL : pszKey;
       u16KeyLen = ( UNSIGNED16 ) nLen;
       u16KeyType = ADS_RAWKEY;
-      if( pszKey == pszKeyFree )
-         pszKeyFree = NULL;
    }
    else if( HB_IS_DATETIME( pKey ) )
    {
