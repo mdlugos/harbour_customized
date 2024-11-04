@@ -49,13 +49,6 @@
 
 #include "hbvm.h"
 #include "hbapierr.h"
-#include "hbapilng.h"
-#include "hbstack.h"
-#include "hbdate.h"
-#include "hbgtcore.h"
-
-//#include "set.ch"
-#include "rddsys.ch"
 
 #define HARBOUR_MAX_RDD_FILTER_LENGTH  256
 #define MAX_STR_LEN                    255
@@ -68,7 +61,7 @@ int     hb_ads_iCharType     = ADS_ANSI;
 HB_BOOL hb_ads_bTestRecLocks = HB_FALSE;               /* Debug Implicit locks */
 
 //TO ADS
-char * hb_adsOemToAnsi( const char * pszSrc, UNSIGNED32 * pnLen, ADSAREAP pArea, HB_BOOL bOEM )
+char * hb_adsOemToAnsi( const char * pszSrc, HB_SIZE * pnLen, ADSAREAP pArea, HB_BOOL bOEM )
 {
    char * pszDest = ( char * ) HB_UNCONST( pszSrc );
    PHB_CODEPAGE toCdp = pArea->area.cdPage;
@@ -77,6 +70,8 @@ char * hb_adsOemToAnsi( const char * pszSrc, UNSIGNED32 * pnLen, ADSAREAP pArea,
 #ifdef ADS_USE_OEM_TRANSLATION
    if ( bOEM && pArea->iCharType == ADS_OEM)
       toCdp = hb_gtHostCP();
+#else
+   HB_SYMBOL_UNUSED( bOEM );    
 #endif
 
    if( fromCdp != toCdp )
@@ -87,7 +82,7 @@ char * hb_adsOemToAnsi( const char * pszSrc, UNSIGNED32 * pnLen, ADSAREAP pArea,
 }
 
 //FORM ADS
-char * hb_adsAnsiToOem( const char * pszSrc, UNSIGNED32 * pnLen, ADSAREAP pArea, HB_BOOL bOEM )
+char * hb_adsAnsiToOem( const char * pszSrc, HB_SIZE * pnLen, ADSAREAP pArea, HB_BOOL bOEM )
 {
    char * pszDest = ( char * ) HB_UNCONST( pszSrc );
    PHB_CODEPAGE fromCdp = pArea->area.cdPage;
@@ -96,6 +91,8 @@ char * hb_adsAnsiToOem( const char * pszSrc, UNSIGNED32 * pnLen, ADSAREAP pArea,
 #ifdef ADS_USE_OEM_TRANSLATION
    if ( bOEM && pArea->iCharType == ADS_OEM)
       fromCdp = hb_gtHostCP();
+#else
+   HB_SYMBOL_UNUSED( bOEM );    
 #endif
 
    if( fromCdp != toCdp )
