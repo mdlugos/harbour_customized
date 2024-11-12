@@ -49,6 +49,12 @@
 
 #include "hbvm.h"
 #include "hbapierr.h"
+#include "hbapilng.h"
+#include "hbapigt.h"
+#include "hbstack.h"
+#include "hbdate.h"
+
+#include "rddsys.ch"
 
 #define HARBOUR_MAX_RDD_FILTER_LENGTH  256
 #define MAX_STR_LEN                    255
