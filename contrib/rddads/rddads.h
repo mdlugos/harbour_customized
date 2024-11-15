@@ -148,6 +148,10 @@ typedef struct _ADSAREA_
    ADSHANDLE hOrdCurrent;
    ADSHANDLE hStatement;
    char *    szQuery;
+#if ADS_LIB_VERSION >= 910
+   char *    szCollation;
+#endif
+
 } ADSAREA;
 
 typedef ADSAREA * ADSAREAP;
@@ -181,6 +185,9 @@ extern int     hb_ads_iFileType;    /* current global setting */
 extern int     hb_ads_iLockType;
 extern int     hb_ads_iCheckRights;
 extern int     hb_ads_iCharType;
+#if ADS_LIB_VERSION >= 910
+extern char *  hb_ads_szCollation;
+#endif
 extern HB_BOOL hb_ads_bTestRecLocks;
 
 extern ADSHANDLE  hb_ads_getConnection( void );

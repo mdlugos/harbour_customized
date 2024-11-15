@@ -60,12 +60,17 @@
 #define MAX_STR_LEN                    255
 #define ADS_MAX_PARAMDEF_LEN           2048
 
-int     hb_ads_iFileType     = ADS_CDX;
 int     hb_ads_iLockType     = ADS_PROPRIETARY_LOCKING;
 int     hb_ads_iCheckRights  = ADS_CHECKRIGHTS;
+#if ADS_LIB_VERSION >= 910
+int     hb_ads_iCharType     = MACHINE_VFP_BIN_1250;
+int     hb_ads_iFileType     = ADS_VFP;
+char *  hb_ads_szCollation   = "MACHINE_VFP_BIN_1250:en_US";
+#else
 int     hb_ads_iCharType     = ADS_ANSI;
+int     hb_ads_iFileType     = ADS_CDX;
+#endif
 HB_BOOL hb_ads_bTestRecLocks = HB_FALSE;               /* Debug Implicit locks */
-
 //TO ADS
 char * hb_adsOemToAnsi( const char * pszSrc, HB_SIZE * pnLen, ADSAREAP pArea, HB_BOOL bOEM )
 {
@@ -466,6 +471,13 @@ HB_FUNC( ADSSETCHARTYPE )
       if( charType >= ADS_ANSI && charType <= ADS_OEM )
 #endif
          hb_ads_iCharType = charType;
+
+         if( hb_pcount() > 1 )
+         {
+            if( hb_ads_szCollation )
+               hb_xfree( hb_ads_szCollation );
+            hb_ads_szCollation = hb_strdup( hb_parc( 2 ) );
+         }
    }
 }
 

@@ -790,6 +790,12 @@ HB_ERRCODE hb_adsCloseCursor( ADSAREAP pArea )
       hb_xfree( pArea->szDataFileName );
       pArea->szDataFileName = NULL;
    }
+
+   if( pArea->szCollation )
+   {
+      hb_xfree( pArea->szCollation );
+      pArea->szCollation = NULL;
+   }
    return errCode;
 }
 
@@ -2994,6 +3000,7 @@ static HB_ERRCODE adsCreate( ADSAREAP pArea, LPDBOPENINFO pCreateInfo )
       pArea->area.cdPage = hb_vmCDP();
 
    pArea->iCharType = hb_ads_iCharType;
+   pArea->szCollation = hb_strdup( hb_ads_szCollation );
 
    fUnicode = HB_FALSE;
    pArea->maxFieldLen = 0;
@@ -3203,7 +3210,7 @@ static HB_ERRCODE adsCreate( ADSAREAP pArea, LPDBOPENINFO pCreateInfo )
    if( pArea->maxFieldLen < 24 )
       pArea->maxFieldLen = 24;
 
-   uRetVal = AdsCreateTable( hConnection,
+   uRetVal = AdsCreateTable90( hConnection,
                              ( UNSIGNED8 * ) HB_UNCONST( pCreateInfo->abName ),
                              ( UNSIGNED8 * ) HB_UNCONST( pCreateInfo->atomAlias ),
                              ( UNSIGNED16 ) pArea->iFileType,
@@ -3212,6 +3219,8 @@ static HB_ERRCODE adsCreate( ADSAREAP pArea, LPDBOPENINFO pCreateInfo )
                              ( UNSIGNED16 ) hb_ads_iCheckRights,
                              ( UNSIGNED16 ) hb_setGetNI( HB_SET_MBLOCKSIZE ),
                              ucfieldDefs,
+                             ADS_DEFAULT,
+                             ( UNSIGNED8 * ) HB_UNCONST( pArea->szCollation ),
                              &hTable );
    hb_xfree( ucfieldDefs );
 
@@ -3471,6 +3480,7 @@ static HB_ERRCODE adsOpen( ADSAREAP pArea, LPDBOPENINFO pOpenInfo )
       pArea->area.cdPage = hb_vmCDP();
 
    pArea->iCharType      = hb_ads_iCharType;
+   pArea->szCollation    = hb_strdup( hb_ads_szCollation );
 
    if( pArea->hTable != 0 )
    {
@@ -3537,7 +3547,7 @@ static HB_ERRCODE adsOpen( ADSAREAP pArea, LPDBOPENINFO pOpenInfo )
        */
       do
       {
-         u32RetVal = AdsOpenTable( hConnection,
+         u32RetVal = AdsOpenTable90( hConnection,
                                    ( UNSIGNED8 * ) HB_UNCONST( szFile ),
                                    ( UNSIGNED8 * ) HB_UNCONST( pOpenInfo->atomAlias ),
                                    ( fDictionary ? ADS_DEFAULT : ( UNSIGNED16 ) pArea->iFileType ),
@@ -3546,6 +3556,7 @@ static HB_ERRCODE adsOpen( ADSAREAP pArea, LPDBOPENINFO pOpenInfo )
                                    ( UNSIGNED16 ) hb_ads_iCheckRights,
                                    ( pOpenInfo->fShared ? ADS_SHARED : ADS_EXCLUSIVE ) |
                                    ( pOpenInfo->fReadonly ? ADS_READONLY : ADS_DEFAULT ),
+                                   ( UNSIGNED8 * ) HB_UNCONST( pArea->szCollation ),
                                    &hTable );
          if( u32RetVal != AE_SUCCESS )
          {
@@ -4242,7 +4253,18 @@ static HB_ERRCODE adsOrderCreate( ADSAREAP pArea, LPDBORDERCREATEINFO pOrderInfo
       HB_SIZE nLen = hb_itemGetCLen( pExprItem );
       UNSIGNED8 * pszFree = ( UNSIGNED8 * ) hb_adsOemToAnsi( pszKey, &nLen, pArea, HB_TRUE );
 
-#if ADS_LIB_VERSION >= 610
+#if ADS_LIB_VERSION >= 910
+      u32RetVal = AdsCreateIndex90( hTableOrIndex,
+                                 ( UNSIGNED8 * ) HB_UNCONST( pOrderInfo->abBagName ),
+                                 ( UNSIGNED8 * ) HB_UNCONST( pOrderInfo->atomBagName ),
+                                 pszFree,
+                                 pArea->area.lpdbOrdCondInfo ?
+                                    ( UNSIGNED8 * ) pArea->area.lpdbOrdCondInfo->abFor : NULL,
+                                 pucWhile, u32Options,
+                                 adsGetFileType( pArea->area.rddID ) == ADS_ADT ? adsIndexPageSize( ADS_ADT ) : ADS_DEFAULT,
+                                 ( UNSIGNED8 * ) HB_UNCONST( pArea->szCollation ),
+                                 &hIndex );
+#else
       u32RetVal = AdsCreateIndex61( hTableOrIndex,
                                  ( UNSIGNED8 * ) HB_UNCONST( pOrderInfo->abBagName ),
                                  ( UNSIGNED8 * ) HB_UNCONST( pOrderInfo->atomBagName ),
@@ -4252,15 +4274,6 @@ static HB_ERRCODE adsOrderCreate( ADSAREAP pArea, LPDBORDERCREATEINFO pOrderInfo
                                  pucWhile, u32Options,
                                  adsGetFileType( pArea->area.rddID ) == ADS_ADT ? adsIndexPageSize( ADS_ADT ) : ADS_DEFAULT,
                                  &hIndex );
-#else
-      u32RetVal = AdsCreateIndex( hTableOrIndex,
-                               ( UNSIGNED8 * ) HB_UNCONST( pOrderInfo->abBagName ),
-                               ( UNSIGNED8 * ) HB_UNCONST( pOrderInfo->atomBagName ),
-                               pszFree,
-                               pArea->area.lpdbOrdCondInfo ?
-                                 ( UNSIGNED8 * ) pArea->area.lpdbOrdCondInfo->abFor : NULL,
-                               pucWhile, u32Options,
-                               &hIndex );
 #endif
       hb_adsOemAnsiFree( pszKey, ( char * ) pszFree);
    }
