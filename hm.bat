@@ -2,6 +2,7 @@ SET Path=%~dp0bin\win\msvc64;%~d0\tools;%~d0\ng;%~d0\MySQL.x64\LIB;%~d0\ads120\a
 set HB_WITH_MYSQL=%~d0\MySQL.x64\include
 set HB_WITH_ADS=%~d0\ads120\acesdk
 set HB_WITH_FIREBIRD=%~d0\Firebird.x64\include
+set HB_BUILD_DEBUG=yes
 rem # to enable additional system specific logging output,
 rem # OutputDebugString() on Windows, syslog() on *nix systems:
 rem https://github.com/harbour/core/tree/master?tab=readme-ov-file#debugging-options

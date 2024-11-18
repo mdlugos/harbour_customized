@@ -1,7 +1,8 @@
-SET Path=%~dp0bin\win\msvc;%~dp0..\tools;%~dp0..\ng;%~dp0..\MySQL\LIB;%~dp0..\ads120\acesdk;%~dp0..\Firebird\;%path%
+SET Path=%~dp0bin\win\msvc;%~dp0..\MySQL\LIB;%~dp0..\Firebird\;%path%
 set HB_WITH_MYSQL=%~dp0..\MySQL\include
-set HB_WITH_ADS=%~dp0..\ads120\acesdk
+set HB_WITH_ADS=%~dp0..\ads111\acesdk
 set HB_WITH_FIREBIRD=%~dp0..\Firebird\include
+set HB_BUILD_DEBUG=yes
 rem # to enable additional system specific logging output,
 rem # OutputDebugString() on Windows, syslog() on *nix systems:
 rem https://github.com/harbour/core/tree/master?tab=readme-ov-file#debugging-options

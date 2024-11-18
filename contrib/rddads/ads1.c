@@ -629,11 +629,10 @@ static HB_ERRCODE adsScopeSet( ADSAREAP pArea, ADSHANDLE hOrder, HB_USHORT nScop
             case ADS_STRING:
                if( HB_IS_STRING( pItem ) )
                {
-                  UNSIGNED16 u16DataType = ADS_STRINGKEY ;
+                  UNSIGNED16 u16DataType = ADS_RAWKEY ;
                   HB_SIZE nLen = hb_itemGetCLen( pItem );
                   const char * pucScope = hb_itemGetCPtr( pItem );
                   UNSIGNED8 * pszKeyFree = ( UNSIGNED8 * ) hb_adsOemToAnsi( pucScope, &nLen, pArea, HB_FALSE );
-                  u16DataType = ADS_RAWKEY;
                   AdsSetScope( hOrder, nScope, pszKeyFree, ( UNSIGNED16 ) nLen, u16DataType );
                   hb_adsOemAnsiFree( pucScope, ( char * ) pszKeyFree );
                }
@@ -1030,8 +1029,8 @@ static HB_ERRCODE adsSeek( ADSAREAP pArea, HB_BOOL bSoftSeek, PHB_ITEM pKey, HB_
    /* build a seek key */
    if( HB_IS_STRING( pKey ) )
    {
-      pszKeyFree = ( UNSIGNED8 * ) HB_UNCONST( hb_itemGetCPtr( pKey ) );
       HB_SIZE nLen = hb_itemGetCLen( pKey );
+      pszKeyFree = ( UNSIGNED8 * ) HB_UNCONST( hb_itemGetCPtr( pKey ) );
       pszKey = ( UNSIGNED8* ) hb_adsOemToAnsi( ( const char * ) pszKeyFree, &nLen, pArea, HB_FALSE );
       pszKeyFree = ( pszKey == pszKeyFree ) ? NULL : pszKey;
       u16KeyLen = ( UNSIGNED16 ) nLen;
@@ -2643,7 +2642,7 @@ static HB_ERRCODE adsPutValue( ADSAREAP pArea, HB_USHORT uiIndex, PHB_ITEM pItem
                void * hString;
                const HB_WCHAR * pwBuffer = hb_itemGetStrU16( pItem, HB_CDP_ENDIAN_LITTLE,
                                                              &hString, &nLen );
-               if ( nLen > pField->uiLen && pField->uiType == HB_FT_STRING )
+               if ( nLen > ( HB_SIZE ) pField->uiLen && pField->uiType == HB_FT_STRING )
                   nLen = pField->uiLen;
                u32RetVal = AdsSetStringW( pArea->hTable, ADSFIELD( uiIndex ),
                                           ( WCHAR * ) HB_UNCONST( pwBuffer ), (UNSIGNED32) nLen );
@@ -2658,7 +2657,7 @@ static HB_ERRCODE adsPutValue( ADSAREAP pArea, HB_USHORT uiIndex, PHB_ITEM pItem
                nLen = hb_itemGetCLen( pItem );
                if( ( pField->uiFlags & HB_FF_BINARY ) == 0 )
                   pszFree = hb_adsOemToAnsi( pszVal, &nLen, pArea, pField->uiType == HB_FT_VARLENGTH );
-               if( nLen > pField->uiLen )
+               if( nLen > ( HB_SIZE ) pField->uiLen )
                {
 #if ADS_LIB_VERSION >= 900
                   if( pField->uiType == HB_FT_STRING || pArea->iFileType == ADS_VFP )

@@ -65,7 +65,7 @@ int     hb_ads_iCheckRights  = ADS_CHECKRIGHTS;
 #if ADS_LIB_VERSION >= 910
 int     hb_ads_iCharType     = MACHINE_VFP_BIN_1250;
 int     hb_ads_iFileType     = ADS_VFP;
-char *  hb_ads_szCollation   = "MACHINE_VFP_BIN_1250:en_US";
+char *  hb_ads_szCollation   = ":en_US";
 #else
 int     hb_ads_iCharType     = ADS_ANSI;
 int     hb_ads_iFileType     = ADS_CDX;
@@ -1049,14 +1049,14 @@ HB_FUNC( ADSSETAOF )
 
          char * pucFilter = ( char * ) HB_UNCONST ( hb_parc( 1 ) );
          char * pszFree = NULL;
-
+         UNSIGNED32 ulRetVal;
          if ( pArea->area.cdPage != hb_vmCDP() )
          {
             HB_SIZE nLen = hb_parclen( 1 );
             pszFree = pucFilter = hb_cdpnDup( ( const char * ) pucFilter, &nLen, hb_vmCDP(), pArea->area.cdPage );
          }
 
-         UNSIGNED32 ulRetVal = AdsSetAOF( pArea->hTable,
+         ulRetVal = AdsSetAOF( pArea->hTable,
                                           ( UNSIGNED8 * ) pucFilter,
                                           ( UNSIGNED16 ) ( hb_pcount() > 1 ? hb_parni( 2 ) : ADS_RESOLVE_DYNAMIC ) /* usResolve */ ); /* ADS_RESOLVE_IMMEDIATE */
 
