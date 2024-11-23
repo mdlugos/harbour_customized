@@ -56,6 +56,7 @@
 #include "hbapierr.h"
 #include "hbdbferr.h"
 #include "hbapilng.h"
+#include "hbdate.h"
 #include "hbset.h"
 #include "hbstack.h"
 
@@ -2778,10 +2779,8 @@ static HB_ERRCODE adsPutValue( ADSAREAP pArea, HB_USHORT uiIndex, PHB_ITEM pItem
             else if( ( pField->uiFlags & HB_FF_UNICODE ) != 0 )
             {
                void * hString;
-               HB_SIZE nL = nLen;
                const HB_WCHAR * pwBuffer = hb_itemGetStrU16( pItem, HB_CDP_ENDIAN_LITTLE,
-                                                             &hString, &nL );
-               nLen = nL;
+                                                             &hString, &nLen );
                u32RetVal = AdsSetStringW( pArea->hTable, ADSFIELD( uiIndex ),
                                           ( WCHAR * ) HB_UNCONST( pwBuffer ),
                                           ( UNSIGNED32 ) nLen );
@@ -2791,8 +2790,8 @@ static HB_ERRCODE adsPutValue( ADSAREAP pArea, HB_USHORT uiIndex, PHB_ITEM pItem
             else
             {
                const char * pszVal = hb_itemGetCPtr( pItem );
-               char * pszFree = hb_adsOemToAnsi( pszVal, &nLen, pArea, HB_FALSE );
-               u32RetVal = AdsSetFieldRaw( pArea->hTable, ADSFIELD( uiIndex ),
+               char * pszFree = hb_adsOemToAnsi( pszVal, &nLen, pArea, HB_TRUE );
+               u32RetVal = AdsSetString( pArea->hTable, ADSFIELD( uiIndex ),
                                          ( UNSIGNED8 * ) pszVal,
                                          ( UNSIGNED32 ) nLen );
                hb_adsOemAnsiFree( pszVal, pszFree ); 
