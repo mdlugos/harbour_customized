@@ -62,12 +62,12 @@
 
 int     hb_ads_iLockType     = ADS_PROPRIETARY_LOCKING;
 int     hb_ads_iCheckRights  = ADS_CHECKRIGHTS;
-#if ADS_LIB_VERSION >= 910
-int     hb_ads_iCharType     = MACHINE_VFP_BIN_1250;
-int     hb_ads_iFileType     = ADS_VFP;
-char *  hb_ads_szCollation   = ":en_US";
-#else
 int     hb_ads_iCharType     = ADS_ANSI;
+#if ADS_LIB_VERSION >= 910
+//int     hb_ads_iCharType     = MACHINE_VFP_BIN_1250;
+int     hb_ads_iFileType     = ADS_VFP;
+char *  hb_ads_szCollation   = "ANSI:en_US";
+#else
 int     hb_ads_iFileType     = ADS_CDX;
 #endif
 HB_BOOL hb_ads_bTestRecLocks = HB_FALSE;               /* Debug Implicit locks */
@@ -472,12 +472,12 @@ HB_FUNC( ADSSETCHARTYPE )
 #endif
          hb_ads_iCharType = charType;
 
-         if( hb_pcount() > 1 )
-         {
-            if( hb_ads_szCollation )
-               hb_xfree( hb_ads_szCollation );
-            hb_ads_szCollation = hb_strdup( hb_parc( 2 ) );
-         }
+      if( hb_pcount() > 1 )
+      {
+         if( hb_ads_szCollation )
+            hb_xfree( hb_ads_szCollation );
+         hb_ads_szCollation = hb_strdup( hb_parc( 2 ) );
+      }
    }
 }
 
