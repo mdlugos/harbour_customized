@@ -2543,3 +2543,17 @@ HB_FUNC( ADSSETINDEXDIRECTION )
 #endif
    hb_retnl( nRet );
 }
+
+HB_FUNC( ADSBUILDRAWKEY )
+{
+#if ADS_LIB_VERSION >= 1010
+   UNSIGNED8  buf[ ADS_MAX_KEY_LENGTH + 1 ];
+   UNSIGNED16 usLen = sizeof( buf );
+   ADSAREAP pArea = hb_adsGetWorkAreaPointer();
+
+   if( pArea && AdsBuildRawKey100( pArea->hOrdCurrent, buf, &usLen, ADS_GET_PRIMARY_WEIGHT_LENGTH ) == AE_SUCCESS )  //softseek or ADS_GET_PARTIAL_FULL_KEY_LENGTH
+      hb_retclen( ( char * ) buf, usLen );
+   else
+#endif
+      hb_retc_null();
+}
