@@ -66,7 +66,7 @@ int     hb_ads_iCharType     = ADS_ANSI;
 #if ADS_LIB_VERSION >= 910
 //int     hb_ads_iCharType     = MACHINE_VFP_BIN_1250;
 int     hb_ads_iFileType     = ADS_VFP;
-char *  hb_ads_szCollation   = "ANSI:en_US";
+char *  hb_ads_szCollation   = "ANSI:pl";
 #else
 int     hb_ads_iFileType     = ADS_CDX;
 #endif
