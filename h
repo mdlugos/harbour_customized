@@ -1,1 +1,1 @@
-hbmk2 lin.hbm -u+head/$*
+hbmk2 @lin -u+head/$*
