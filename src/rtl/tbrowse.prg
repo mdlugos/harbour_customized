@@ -645,10 +645,10 @@ METHOD readRecord( nRow ) CLASS TBrowse
             oCol := aCol[ _TBCI_COLOBJECT ]
             cValue := Eval( oCol:block )
             aColor := _CELLCOLORS( aCol, cValue, nColors )
-            IF ValType( cValue ) $ "CMNDTL"
-               cValue := PadR( Transform( cValue, iif( HB_ISSTRING( oCol:picture ), oCol:picture, NIL ) ), aCol[ _TBCI_CELLWIDTH ] )
+            IF ValType( cValue ) $ "CMNDTL" .and. HB_ISSTRING( oCol:picture )
+               cValue := PadR( Transform( cValue, oCol:picture ), aCol[ _TBCI_CELLWIDTH ] )
             ELSE
-               cValue := Space( aCol[ _TBCI_CELLWIDTH ] )
+               cValue := PadR( hb_CStr( cValue ), aCol[ _TBCI_CELLWIDTH ] )
             ENDIF
          NEXT
       ELSE
@@ -1300,8 +1300,9 @@ METHOD doConfigure() CLASS TBrowse
        */
       xValue := Eval( oCol:block )
       cType  := ValType( xValue )
-      nWidth := iif( cType $ "CMNDTL", ;
-                     Len( Transform( xValue, iif( HB_ISSTRING( oCol:picture ), oCol:picture, NIL ) ) ), 0 )
+      nWidth := Len( iif( cType $ "CMNDTL" .and. HB_ISSTRING( oCol:picture ), ;
+         Transform( xValue, oCol:picture ), hb_CStr( xValue ) ) )
+
       cColSep := oCol:colSep
       IF cColSep == NIL
          cColSep := ::cColSep
