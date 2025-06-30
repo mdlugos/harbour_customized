@@ -4361,6 +4361,11 @@ static HB_ERRCODE hb_dbfOpen( DBFAREAP pArea, LPDBOPENINFO pOpenInfo )
       {
          pField = ( LPDBFFIELD ) ( pBuffer + uiCount * sizeof( DBFFIELD ) );
 
+         //by MD 
+         //if( pField->bType == 'C' && pField->bLen == 1 && ! ( pField->bFieldFlags & HB_FF_BINARY ) && (
+         //   ! hb_strnicmp(pField->bName, "POZYCJA", 8 ) || ! hb_strnicmp(pField->bName, "LINK", 5 )) )
+         //   pField->bFieldFlags |= HB_FF_BINARY;
+
          if( uiFlagsMask == 0 )
          {
             switch( pField->bType )
