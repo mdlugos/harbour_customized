@@ -10,8 +10,8 @@ rem https://github.com/harbour/core/tree/master?tab=readme-ov-file#debugging-opt
 rem set HB_TR_LEVEL=debug
 rem set HB_TR_OUTPUT=tracelog.txt
 rem set HB_TR_SYSOUT=yes
+"%ProgramFiles%\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars64.bat"
 "%ProgramFiles(x86)%\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat"
-"%ProgramFiles%\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat"
 SET INCLUDE=%~dp0..\h\comp\VC\include;%~dp0..\h\comp\KITS\include\ucrt;%~dp0..\h\comp\KITS\include\winrt;%~dp0..\h\comp\KITS\include\shared;%~dp0..\h\comp\KITS\include\um;%~dp0..\h\comp\KITS\include\cppwinrt
 SET LIB=%~dp0..\h\comp\VC\lib\x64;%~dp0..\h\comp\KITS\lib\ucrt\x64;%~dp0..\h\comp\KITS\lib\um\x64;
 SET Path=%~dp0..\h\comp\VC\bin\HostX64\x64;%~dp0..\h\comp\KITS\bin\x64;%Path%
