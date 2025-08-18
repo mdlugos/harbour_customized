@@ -1,0 +1,1 @@
+@hbmk2 @prg -debug -b -p -inc -rebuild -u+head/%*
