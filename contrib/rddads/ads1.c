@@ -2990,7 +2990,7 @@ static HB_ERRCODE adsCreate( ADSAREAP pArea, LPDBOPENINFO pCreateInfo )
 
    if( pCreateInfo->cdpId )
    {
-      pArea->area.cdPage = hb_cdpFind( pCreateInfo->cdpId );
+      pArea->area.cdPage = hb_cdpFind( ( strncmp( pCreateInfo->cdpId, "UTF8", 4 ) ) ? pCreateInfo->cdpId : hb_setGetDBCODEPAGE() );
       if( ! pArea->area.cdPage )
          pArea->area.cdPage = hb_vmCDP();
    }
@@ -3470,7 +3470,7 @@ static HB_ERRCODE adsOpen( ADSAREAP pArea, LPDBOPENINFO pOpenInfo )
 
    if( pOpenInfo->cdpId )
    {
-      pArea->area.cdPage = hb_cdpFind( pOpenInfo->cdpId );
+      pArea->area.cdPage = hb_cdpFind( ( strncmp( pOpenInfo->cdpId, "UTF8", 4 ) ) ? pOpenInfo->cdpId : hb_setGetDBCODEPAGE() );
       if( ! pArea->area.cdPage )
          pArea->area.cdPage = hb_vmCDP();
    }

@@ -944,7 +944,7 @@ static HB_ERRCODE adsxCreate( ADSXAREAP pArea, LPDBOPENINFO pCreateInfo )
    {
       if( pCreateInfo->cdpId )
       {
-         pArea->adsarea.area.cdPage = hb_cdpFind( pCreateInfo->cdpId );
+         pArea->adsarea.area.cdPage = hb_cdpFind( ( strncmp( pCreateInfo->cdpId, "UTF8", 4 ) ) ? pCreateInfo->cdpId : hb_setGetDBCODEPAGE() );
          if( ! pArea->adsarea.area.cdPage )
             pArea->adsarea.area.cdPage = hb_vmCDP();
       }
@@ -986,7 +986,7 @@ static HB_ERRCODE adsxOpen( ADSXAREAP pArea, LPDBOPENINFO pOpenInfo )
    {
       if( pOpenInfo->cdpId )
       {
-         pArea->adsarea.area.cdPage = hb_cdpFind( pOpenInfo->cdpId );
+         pArea->adsarea.area.cdPage = hb_cdpFind( ( strncmp( pOpenInfo->cdpId, "UTF8", 4 ) ) ? pOpenInfo->cdpId : hb_setGetDBCODEPAGE() );
          if( ! pArea->adsarea.area.cdPage )
             pArea->adsarea.area.cdPage = hb_vmCDP();
       }
