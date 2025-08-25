@@ -44,6 +44,9 @@
  *
  */
 
+#include "hbapi.h"
+#include "hbdefs.h"
+#include <string.h>
 #define HB_TRIGVAR_BYREF
 
 #include "hbrdddbf.h"
@@ -6268,6 +6271,52 @@ static HB_ERRCODE hb_dbfReadDBHeader( DBFAREAP pArea )
    if( errCode != HB_SUCCESS )
       return HB_FAILURE;
 
+   //musisz wpisać UTF8 przed otwarciem bazy i default ustawić w dbcdp
+   if ( HB_CDP_ISUTF8( pArea->area.cdPage ) )
+   {
+      char cID[6];
+      PHB_CODEPAGE cdP;
+      hb_strncpy( cID, hb_langID(), sizeof( cID ) -1 );
+
+      switch( pArea->dbfHeader.bCodePage ) 
+      {
+         case 0x01:
+            hb_strncpy( cID, "EN", sizeof( cID ) -1 );
+            break;
+         case 0x02:
+            hb_strncat( cID, "850", sizeof( cID ) -1 );
+            break;
+         case 0x64:
+            hb_strncat( cID, "852", sizeof( cID ) -1 );
+            break;
+         case 0x65:
+            hb_strncat( cID, "865", sizeof( cID ) -1 );
+            break;
+         case 0x66:
+            hb_strncat( cID, "866", sizeof( cID ) -1 );
+            break;
+         case 0x69:
+            hb_strncpy( cID, "PLMAZ", sizeof( cID ) -1 );
+            //hb_strncat( cID, "MAZ", sizeof( cID ) -1 );
+            break;
+         case 0x03:
+         case 0xC8:
+         case 0xC9:
+         case 0xCA:
+         case 0xCB:
+            hb_strncat( cID, "WIN", sizeof( cID ) -1 );
+            break;
+         default:
+            *cID = 0;
+      }
+      cdP = hb_cdpFind( cID );
+
+      if ( ! cdP )
+         cdP = hb_cdpFind( hb_setGetDBCODEPAGE() );
+
+      pArea->area.cdPage = ( cdP ) ? cdP : hb_vmCDP();
+   }
+
    pArea->uiHeaderLen = HB_GET_LE_UINT16( pArea->dbfHeader.uiHeaderLen );
    pArea->ulRecCount  = HB_GET_LE_UINT32( pArea->dbfHeader.ulRecCount );
 
@@ -6320,6 +6369,52 @@ static HB_ERRCODE hb_dbfWriteDBHeader( DBFAREAP pArea )
                                           iYear - 1900 : iYear % 100 );
    pArea->dbfHeader.bMonth = ( HB_BYTE ) iMonth;
    pArea->dbfHeader.bDay = ( HB_BYTE ) iDay;
+
+   if ( ! pArea->dbfHeader.bCodePage && pArea->area.cdPage && ! HB_CDP_ISUTF8( pArea->area.cdPage ) ) 
+   {
+      // cyfry SV437 albo puste EN
+      if ( ( pArea->area.cdPage->uniTable == HB_UNITB_437 ) && ( pArea->area.cdPage->id[2] <= '4' ) )
+         pArea->dbfHeader.bCodePage = 0x01;
+
+      else if ( pArea->area.cdPage->uniTable == HB_UNITB_850 )
+         pArea->dbfHeader.bCodePage = 0x02;
+
+      else if ( pArea->area.cdPage->uniTable == HB_UNITB_1252 )
+         pArea->dbfHeader.bCodePage = 0x03;
+
+      else if ( pArea->area.cdPage->uniTable == HB_UNITB_852 )
+         pArea->dbfHeader.bCodePage = 0x64;
+
+      else if ( pArea->area.cdPage->uniTable == HB_UNITB_865 )
+         pArea->dbfHeader.bCodePage = 0x65;
+
+      else if ( pArea->area.cdPage->uniTable == HB_UNITB_866 )
+         pArea->dbfHeader.bCodePage = 0x66;
+
+      else if ( pArea->area.cdPage->uniTable == HB_UNITB_861 )
+         pArea->dbfHeader.bCodePage = 0x67;
+
+      else if ( pArea->area.cdPage->uniTable == HB_UNITB_MAZ )
+         pArea->dbfHeader.bCodePage = 0x69;
+
+      else if ( pArea->area.cdPage->uniTable == HB_UNITB_869 )
+         pArea->dbfHeader.bCodePage = 0x6A;
+
+      else if ( pArea->area.cdPage->uniTable == HB_UNITB_857 )
+         pArea->dbfHeader.bCodePage = 0x6B;
+
+      else if ( pArea->area.cdPage->uniTable == HB_UNITB_1250 )
+         pArea->dbfHeader.bCodePage = 0xC8;
+
+      else if ( pArea->area.cdPage->uniTable == HB_UNITB_1251 )
+         pArea->dbfHeader.bCodePage = 0xC9;
+
+      else if ( pArea->area.cdPage->uniTable == HB_UNITB_1254 )
+         pArea->dbfHeader.bCodePage = 0xCA;
+
+      else if ( pArea->area.cdPage->uniTable == HB_UNITB_1253 )
+         pArea->dbfHeader.bCodePage = 0xCB;
+   }
 
    /* Update record count */
    if( pArea->fShared )
