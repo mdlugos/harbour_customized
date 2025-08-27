@@ -3528,7 +3528,7 @@ static HB_ERRCODE hb_dbfCreate( DBFAREAP pArea, LPDBOPENINFO pCreateInfo )
    }
    pArea->ulMemoBlockSize = 0;
 
-   if( pCreateInfo->cdpId ) // "UTF8" cdp will be read from the dbf header // && hb_strnicmp( pCreateInfo->cdpId, "UTF8", 4 ) 
+   if( pCreateInfo->cdpId )
    {
       pArea->area.cdPage = hb_cdpFindExt( pCreateInfo->cdpId );
       if( ! pArea->area.cdPage )
@@ -4198,7 +4198,7 @@ static HB_ERRCODE hb_dbfOpen( DBFAREAP pArea, LPDBOPENINFO pOpenInfo )
          pArea->bLockType = DB_DBFLOCK_CLIPPER;
    }
 
-   if( pOpenInfo->cdpId ) // "UTF8" cdp will be read from the dbf header // && hb_strnicmp( pCreateInfo->cdpId, "UTF8", 4 ) 
+   if( pOpenInfo->cdpId )
    {
       pArea->area.cdPage = hb_cdpFindExt( pOpenInfo->cdpId );
       if( ! pArea->area.cdPage )
@@ -6169,6 +6169,8 @@ static HB_ERRCODE hb_dbfReadDBHeader( DBFAREAP pArea )
 {
    HB_ERRCODE errCode;
    PHB_ITEM pError;
+   PHB_CODEPAGE cdP;
+   char cID[5+1];
 
    HB_TRACE( HB_TR_DEBUG, ( "hb_dbfReadDBHeader(%p)", ( void * ) pArea ) );
 
@@ -6271,17 +6273,16 @@ static HB_ERRCODE hb_dbfReadDBHeader( DBFAREAP pArea )
    if( errCode != HB_SUCCESS )
       return HB_FAILURE;
 
-   //musisz wpisać UTF8 przed otwarciem bazy i default ustawić w dbcdp
-   // "UTF8" cdp will be read from the dbf header // && hb_strnicmp( pCreateInfo->cdpId, "UTF8", 4 ) 
-   if ( HB_CDP_ISUTF8( pArea->area.cdPage ) )
+   cdP = pArea->area.cdPage;
+   if ( HB_CDP_ISUTF8( cdP ) )
    {
-      PHB_CODEPAGE cdP = hb_cdpFind( hb_setGetDBCODEPAGE() );
-      char cID[5+1];
-      hb_strncpyUpper( cID, hb_langID(), sizeof( cID ) -1 );
-
+      cdP = hb_cdpFind( hb_setGetDBCODEPAGE() );
       if( ! cdP )
          cdP = hb_vmCDP();
-   
+   } // USE_FILE_CODEPAGE
+
+      hb_strncpyUpper( cID, hb_langID(), sizeof( cID ) -1 );
+
       switch( pArea->dbfHeader.bCodePage ) 
       {
          case 0x00:
@@ -6328,7 +6329,7 @@ static HB_ERRCODE hb_dbfReadDBHeader( DBFAREAP pArea )
       // i preserve copdepages with longer names than 5 if first 5 characters match
       if( strncmp( cID, cdP->id, 5 ) )
       {
-         cdP = hb_cdpFindExt( cID );
+         cdP = hb_cdpFind( cID );
          if( ! cdP ) 
          {
             hb_dbfErrorRT( pArea, EG_CORRUPTION, EDBF_CORRUPT, NULL, 0, 0, NULL );
@@ -6336,7 +6337,7 @@ static HB_ERRCODE hb_dbfReadDBHeader( DBFAREAP pArea )
          }
       }
       pArea->area.cdPage = cdP;
-   }
+   // } // USE_FILE_CODEPAGE
 
    pArea->uiHeaderLen = HB_GET_LE_UINT16( pArea->dbfHeader.uiHeaderLen );
    pArea->ulRecCount  = HB_GET_LE_UINT32( pArea->dbfHeader.ulRecCount );
