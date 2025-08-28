@@ -6365,58 +6365,40 @@ static HB_ERRCODE hb_dbfWriteDBHeader( DBFAREAP pArea )
    // ktoś mógłby zapisać bez cdPage
    if( ( pArea->area.cdPage ) && ! HB_CDP_ISUTF8( pArea->area.cdPage ) )
    {
-      HB_BYTE cp = 0x00;
-      // cyfry SV437 albo puste EN
-      if ( ( pArea->area.cdPage->uniTable == HB_UNITB_437 ) && ( pArea->area.cdPage->id[2] <= '4' ) )
-         cp = 0x01;
+      const char * tut[14] = {
+                              HB_CPID_437,
+                              HB_CPID_850,
+                              HB_CPID_1252,
+                              HB_CPID_852,
+                              HB_CPID_865,
+                              HB_CPID_866,
+                              HB_CPID_861,
+                              HB_CPID_MAZ,
+                              HB_CPID_869,
+                              HB_CPID_857,
+                              HB_CPID_1250,
+                              HB_CPID_1251,
+                              HB_CPID_1254,
+                              HB_CPID_1253
+                           };
 
-      else if ( pArea->area.cdPage->uniTable == HB_UNITB_850 )
-         cp = 0x02;
+      const HB_BYTE tcp[14] = { 0x01, 0x02, 0x03, 0x64,0x65, 0x66,
+          0x67, 0x69, 0x6A, 0x6B, 0xC8, 0xC9, 0xCA, 0xCB };
 
-      else if ( pArea->area.cdPage->uniTable == HB_UNITB_1252 )
-         cp = 0x03;
+      HB_BYTE cp;
+      for( cp = sizeof(tcp); cp--; )
+         if( strcmp( pArea->area.cdPage->uniTable->uniID, tut[cp] ) == 0 ) break;
 
-      else if ( pArea->area.cdPage->uniTable == HB_UNITB_852 )
-         cp = 0x64;
-
-      else if ( pArea->area.cdPage->uniTable == HB_UNITB_865 )
-         cp = 0x65;
-
-      else if ( pArea->area.cdPage->uniTable == HB_UNITB_866 )
-         cp = 0x66;
-
-      else if ( pArea->area.cdPage->uniTable == HB_UNITB_861 )
-         cp = 0x67;
-
-      else if ( pArea->area.cdPage->uniTable == HB_UNITB_MAZ )
-         cp = 0x69;
-
-      else if ( pArea->area.cdPage->uniTable == HB_UNITB_869 )
-         cp = 0x6A;
-
-      else if ( pArea->area.cdPage->uniTable == HB_UNITB_857 )
-         cp = 0x6B;
-
-      else if ( pArea->area.cdPage->uniTable == HB_UNITB_1250 )
-         cp = 0xC8;
-
-      else if ( pArea->area.cdPage->uniTable == HB_UNITB_1251 )
-         cp = 0xC9;
-
-      else if ( pArea->area.cdPage->uniTable == HB_UNITB_1254 )
-         cp = 0xCA;
-
-      else if ( pArea->area.cdPage->uniTable == HB_UNITB_1253 )
-         cp = 0xCB;
-
-      if ( cp )
+      // zero też w UTF8 i innych dziwnych wiec dla pewnosci sprawdzam czy 437 w nazwie albo samo EN   
+      if( cp || ( pArea->area.cdPage->id[2] <= '4' ) )
       {
-          if (pArea->dbfHeader.bCodePage && pArea->dbfHeader.bCodePage != cp)
-          {
-              hb_dbfErrorRT(pArea, EG_CORRUPTION, EDBF_CORRUPT, NULL, 0, 0, NULL);
-              return HB_FAILURE;
-          }
-          pArea->dbfHeader.bCodePage = cp;
+         cp = ( cp != 0xFF ) ? tcp[cp] : 0x00;
+         if(cp && pArea->dbfHeader.bCodePage && pArea->dbfHeader.bCodePage != cp)
+         {
+            hb_dbfErrorRT(pArea, EG_CORRUPTION, EDBF_CORRUPT, NULL, 0, 0, NULL);
+            return HB_FAILURE;
+         }
+         pArea->dbfHeader.bCodePage = cp;
       }
    }
 
