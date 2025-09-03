@@ -5,3 +5,4 @@ set HB_WITH_ADS=%~dp0..\ads120\acesdk
 set HB_WITH_FIREBIRD=%~dp0..\Firebird.x64\include
 set HB_WITH_QT=%~dp0..\h\comp\mingw64\include
 rem set HB_BUILD_DEBUG=yes
+set HB_MT=yes
