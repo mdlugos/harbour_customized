@@ -4,4 +4,4 @@ set HB_WITH_MYSQL=%~dp0..\MySQL\include
 set HB_WITH_FIREBIRD=%~dp0..\Firebird\include
 SET HB_WITH_ADS=%~dp0..\ads101\acesdk
 set path=%~dp0..\openssl-3\x86\bin;%path%
-set HB_MT=yes
+rem set HB_MT=yes

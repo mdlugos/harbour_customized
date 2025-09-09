@@ -4,4 +4,4 @@ set HB_WITH_MYSQL=%~dp0..\MySQL\include
 set HB_WITH_ADS=%~dp0..\ads101\acesdk
 set HB_WITH_FIREBIRD=%~dp0..\Firebird\include
 rem set HB_BUILD_DEBUG=yes
-set HB_MT=yes
+rem set HB_MT=yes
