@@ -1,3 +1,4 @@
+#!/bin/bash
 #export HB_QTPATH="/usr/lib/qt6/libexec/"
 #export HB_WITH_QT="/usr/include/x86_64-linux-gnu/qt6"
 #HB_QTPATH, HB_QTSUFFIX HB_WITH_QT
