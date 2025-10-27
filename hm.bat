@@ -3,6 +3,7 @@ set path=%~dp0;%~dp0..\tools;%~dp0..\ads120\acesdk;%~dp0..\MySQL.x64\LIB;%~dp0..
 set HB_WITH_MYSQL=%~dp0..\MySQL.x64\include
 set HB_WITH_ADS=%~dp0..\ads120\acesdk
 set HB_WITH_FIREBIRD=%~dp0..\Firebird.x64\include
+set HB_WITH_CURL=%~dp0..\curl\include
 set HB_COMPILER=msvc64
 rem set HB_MT=yes
 set HB_BUILD_DEBUG=yes
