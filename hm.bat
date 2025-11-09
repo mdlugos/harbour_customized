@@ -4,9 +4,10 @@ set HB_WITH_MYSQL=%~dp0..\MySQL.x64\include
 set HB_WITH_ADS=%~dp0..\ads120\acesdk
 set HB_WITH_FIREBIRD=%~dp0..\Firebird.x64\include
 set HB_WITH_CURL=%~dp0..\curl\include
+set HB_WITH_OPENSSL=%~dp0..\openssl\include
 set HB_COMPILER=msvc64
 rem set HB_MT=yes
-set HB_BUILD_DEBUG=yes
+rem set HB_BUILD_DEBUG=yes
 rem # to enable additional system specific logging output,
 rem # OutputDebugString() on Windows, syslog() on *nix systems:
 rem https://github.com/harbour/core/tree/master?tab=readme-ov-file#debugging-options
