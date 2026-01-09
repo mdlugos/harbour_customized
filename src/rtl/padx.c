@@ -48,6 +48,7 @@
 #include "hbapi.h"
 #include "hbapiitm.h"
 #include "hbapicdp.h"
+#include "hbapigt.h"
 #include "hbapierr.h"
 
 static HB_SIZE hb_cdpItemLen( PHB_CODEPAGE cdp, PHB_ITEM pItem )
@@ -214,6 +215,16 @@ HB_FUNC( PADL )
    s_hb_strPad( HB_PAD_L, cdp );
 }
 
+HB_FUNC( PADLBOX )
+{
+   PHB_CODEPAGE cdp = hb_gtBoxCP();
+
+   if( ! HB_CDP_ISCHARIDX( cdp ) )
+      cdp = NULL;
+
+   s_hb_strPad( HB_PAD_L, cdp );
+}
+
 HB_FUNC( HB_BPADL )
 {
    s_hb_strPad( HB_PAD_L, NULL );
@@ -240,6 +251,16 @@ HB_FUNC( PADR )
    s_hb_strPad( HB_PAD_R, cdp );
 }
 
+HB_FUNC( PADRBOX )
+{
+   PHB_CODEPAGE cdp =  hb_gtBoxCP();
+
+   if( ! HB_CDP_ISCHARIDX( cdp ) )
+      cdp = NULL;
+
+   s_hb_strPad( HB_PAD_R, cdp );
+}
+
 HB_FUNC( HB_BPADR )
 {
    s_hb_strPad( HB_PAD_R, NULL );
@@ -259,6 +280,16 @@ HB_FUNC( HB_UPADR )
 HB_FUNC( PADC )
 {
    PHB_CODEPAGE cdp = hb_vmCDP();
+
+   if( ! HB_CDP_ISCHARIDX( cdp ) )
+      cdp = NULL;
+
+   s_hb_strPad( HB_PAD_C, cdp );
+}
+
+HB_FUNC( PADCBOX )
+{
+   PHB_CODEPAGE cdp = hb_gtBoxCP();
 
    if( ! HB_CDP_ISCHARIDX( cdp ) )
       cdp = NULL;
