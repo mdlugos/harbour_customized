@@ -637,13 +637,12 @@ HB_FUNC( HB_DISPOUTATBOX )
 
    if( nLen > 0 )
    {
-      int iRow = hb_parni( 1 );
-      int iCol = hb_parni( 2 );
       const char * pszString = hb_parc( 3 );
-      int iColor;
+      int iRow, iCol, iColor;
       PHB_CODEPAGE cdp;
       HB_SIZE nIndex = 0;
       HB_WCHAR wc;
+      HB_BOOL bAT = HB_ISNUM( 1 ) && HB_ISNUM( 2 );
 
       if( HB_ISCHAR( 4 ) )
          iColor = hb_gtColorToN( hb_parc( 4 ) );
@@ -652,12 +651,21 @@ HB_FUNC( HB_DISPOUTATBOX )
       else
          iColor = hb_gtGetCurrColor();
 
+      if( bAT )
+      {
+         iRow = hb_parni( 1 );
+         iCol = hb_parni( 2 );
+      }
+      else
+         hb_gtGetPos( &iRow, &iCol );
+      
       cdp = hb_gtBoxCP();
 
       while( HB_CDPCHAR_GET( cdp, pszString, nLen, &nIndex, &wc ) )
          hb_gtPutChar( iRow, iCol++, iColor, HB_GT_ATTR_BOX, wc );
 
-      hb_gtFlush();
+      if( !bAT )
+         hb_gtSetPos( iRow, iCol );
    }
 }
 
