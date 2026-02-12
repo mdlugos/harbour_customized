@@ -4,7 +4,9 @@ set HB_WITH_MYSQL=%~dp0..\MySQL.x64\include
 set HB_WITH_ADS=%~dp0..\ads120\acesdk
 set HB_WITH_FIREBIRD=%~dp0..\Firebird.x64\include
 set HB_WITH_CURL=%~dp0..\curl\include
+set HB_STATIC_CURL=yes
 set HB_WITH_OPENSSL=%~dp0..\openssl\include
+set HB_STATIC_OPENSSL=yes
 set HB_COMPILER=msvc64
 set HB_MT=yes
 set HB_BUILD_DEBUG=yes
@@ -20,4 +22,5 @@ IF EXIST "%VCToolsInstallDir%bin\Hostx64\x64" GOTO EXIT
 SET INCLUDE=%~dp0..\h\comp\VC\include;%~dp0..\h\comp\KITS\include\ucrt;%~dp0..\h\comp\KITS\include\winrt;%~dp0..\h\comp\KITS\include\shared;%~dp0..\h\comp\KITS\include\um;%~dp0..\h\comp\KITS\include\cppwinrt
 SET LIB=%~dp0..\h\comp\VC\lib\x64;%~dp0..\h\comp\KITS\lib\ucrt\x64;%~dp0..\h\comp\KITS\lib\um\x64;
 SET Path=%~dp0..\h\comp\VC\bin\HostX64\x64;%~dp0..\h\comp\KITS\bin\x64;%Path%
+HB_BUILD_DEBUG=no
 :EXIT
