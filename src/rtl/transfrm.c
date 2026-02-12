@@ -248,7 +248,7 @@ HB_FUNC( TRANSFORM )
                                              ( wcExp == 't' ||
                                                wcExp == 'T' ||
                                                wcExp == 'y' ||
-                                               wcExp == 'Y' ) ? 'Y' : 'N' );
+                                               wcExp == 'Y' ) ? 'T' : 'N' );
                         break;
 
                      /* Other choices */
@@ -877,7 +877,7 @@ HB_FUNC( TRANSFORM )
                cPic = *szPic;
             else
             {
-               cPic  = 'L';
+               cPic  = '#';
                bExit = HB_TRUE;
             }
 
@@ -897,6 +897,17 @@ HB_FUNC( TRANSFORM )
                   break;
 
                case '#':
+
+                  if( ! bDone )
+                  {
+                     szResult[ nResultPos ] = hb_itemGetL( pValue ) ? 'T' : 'N';
+                     bDone = HB_TRUE;           /* Logical written */
+                  }
+                  else
+                     szResult[ nResultPos ] = ' ';
+
+                  break;
+
                case 'l':                     /* True/False */
                case 'L':                     /* True/False */
 
@@ -1005,7 +1016,7 @@ HB_FUNC( TRANSFORM )
       }
       else if( HB_IS_LOGICAL( pValue ) )
       {
-         hb_retc_const( hb_itemGetL( pValue ) ? "T" : "F" );
+         hb_retc_const( hb_itemGetL( pValue ) ? "T" : "N" );
       }
       else
          bError = HB_TRUE;
