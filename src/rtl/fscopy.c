@@ -47,6 +47,7 @@
 #include "hbapi.h"
 #include "hbvm.h"
 #include "hbapifs.h"
+#include "hbset.h"
 
 #define HB_FSCOPY_BUFFERSIZE  65536
 
@@ -85,7 +86,10 @@ HB_BOOL hb_fsCopy( const char * pszSource, const char * pszDest )
          }
 
          hb_xfree( pbyBuffer );
-
+#ifndef HB_CLP_STRICT
+         if( hb_setGetHardCommit() )
+            hb_fileCommit( pDstFile );
+#endif
          hb_fileClose( pDstFile );
       }
       else
@@ -165,6 +169,10 @@ HB_BOOL hb_fileCopyEx( const char * pszSource, const char * pszDest, HB_SIZE nBu
          }
 
          hb_xfree( pbyBuffer );
+#ifndef HB_CLP_STRICT
+         if( hb_setGetHardCommit() )
+            hb_fileCommit( pDstFile );
+#endif
 
          hb_fileClose( pDstFile );
       }

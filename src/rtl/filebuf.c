@@ -1666,6 +1666,10 @@ HB_BOOL hb_fileSave( const char * pszFileName, const void * buffer, HB_SIZE nSiz
          pData += nWritten;
       }
       fResult = nSize == 0;
+#ifndef HB_CLP_STRICT
+      if( hb_setGetHardCommit() )
+         hb_fileCommit( pFile );
+#endif
 
       hb_fileClose( pFile );
    }

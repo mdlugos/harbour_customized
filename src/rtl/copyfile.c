@@ -48,6 +48,7 @@
 #include "hbapierr.h"
 #include "hbapiitm.h"
 #include "hbapifs.h"
+#include "hbset.h"
 
 #if defined( HB_OS_UNIX )
    #include <sys/stat.h>
@@ -148,7 +149,10 @@ static HB_BOOL hb_copyfile( const char * pszSource, const char * pszDest )
             hb_itemRelease( pError );
 
          hb_xfree( buffer );
-
+#ifndef HB_CLP_STRICT
+         if( hb_setGetHardCommit() )
+            hb_fileCommit( pDest );
+#endif
          hb_fileClose( pDest );
       }
 

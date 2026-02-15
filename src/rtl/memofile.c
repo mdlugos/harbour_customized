@@ -47,6 +47,7 @@
 #include "hbapi.h"
 #include "hbapiitm.h"
 #include "hbapifs.h"
+#include "hbset.h"
 
 /* NOTE: CA-Cl*pper has ~64 KiB (65516 bytes exactly) limit on read, in Harbour
          this limit is extended, so we are not *strictly* compatible here.
@@ -123,7 +124,10 @@ static HB_BOOL hb_memowrit( HB_BOOL bHandleEOF )
             char cEOF = HB_CHAR_EOF;
             hb_fileWrite( pFile, &cEOF, sizeof( char ), -1 );
          }
-
+#ifndef HB_CLP_STRICT
+         if( hb_setGetHardCommit() )
+            hb_fileCommit( pFile );
+#endif
          hb_fileClose( pFile );
       }
    }
