@@ -605,6 +605,7 @@ METHOD readRecord( nRow ) CLASS TBrowse
    LOCAL aCol
    LOCAL oCol
    LOCAL cValue
+   LOCAL lPad
    LOCAL aColor
    LOCAL nColors, nToMove, nMoved
    LOCAL nRowCount := ::rowCount
@@ -645,10 +646,16 @@ METHOD readRecord( nRow ) CLASS TBrowse
             oCol := aCol[ _TBCI_COLOBJECT ]
             cValue := Eval( oCol:block )
             aColor := _CELLCOLORS( aCol, cValue, nColors )
+            lPad := HB_ISNUMERIC( cValue )
             IF ValType( cValue ) $ "CMNDTL" //.and. HB_ISSTRING( oCol:picture )
-               cValue := PadR( Transform( cValue, oCol:picture ), aCol[ _TBCI_CELLWIDTH ] )
+               cValue := Transform( cValue, oCol:picture )
             ELSE
-               cValue := PadR( hb_CStr( cValue ), aCol[ _TBCI_CELLWIDTH ] )
+               cValue := hb_CStr( cValue )
+            ENDIF
+            IF lPad
+               cValue := PadL( allTrim( cValue ), aCol[ _TBCI_CELLWIDTH ] )
+            ELSE
+               cValue := PadR( cValue, aCol[ _TBCI_CELLWIDTH ] )
             ENDIF
          NEXT
       ELSE
