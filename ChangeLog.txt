@@ -7,6 +7,13 @@
    Entries may not always be in chronological/commit order.
    See license at the end of file. */
 
+2026-05-14 14:50 UTC+0200 Aleksander Czajczynski (hb fki.pl)
+  * contrib/sddsqlt3/core.c
+    ! fix RDDI_EXECUTE operation of SQLITE3 SDD, where SQL statement error
+      instead of raising a .prg runtime error, mostly led to a hard GPF.
+      Additional minor fix is that error message is now converted from
+      UTF8 to HVM codepage.
+
 2026-02-28 15:33 UTC+0100 Przemyslaw Czerpak (druzus/at/poczta.onet.pl)
   * contrib/hbssl/evppkey.c
     ! disabled EVP_PKEY_get_encoded_public_key() in LibreSSL builds
