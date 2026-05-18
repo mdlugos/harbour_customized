@@ -6,3 +6,6 @@ rem SET HB_WITH_ADS=%~dp0..\ads101\acesdk
 set path=%~dp0..\h\comp\mingw\bin;%path%
 rem set HB_MT=yes
 set HB_COMPILER=bcc
+set HB_SHELL=nt
+set SHELL=
+set SHLVL=
