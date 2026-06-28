@@ -644,7 +644,7 @@ METHOD readRecord( nRow ) CLASS TBrowse
       IF nRow <= ::nLastRow
          FOR EACH aCol, cValue, aColor IN ::aColData, ::aCellValues[ nRow ], ::aCellColors[ nRow ]
             oCol := aCol[ _TBCI_COLOBJECT ]
-            cValue := Eval( oCol:block, oCol, Self )
+            cValue := Eval( oCol:block,, oCol, Self )
             aColor := _CELLCOLORS( aCol, cValue, nColors )
             lPad := HB_ISNUMERIC( cValue )
             IF ValType( cValue ) $ "CMNDTL" //.and. HB_ISSTRING( oCol:picture )
@@ -1305,7 +1305,7 @@ METHOD doConfigure() CLASS TBrowse
       /* CA-Cl*pper always evaluates column block even if column is
        * hidden by setting :width to 0. [druzus]
        */
-      xValue := Eval( oCol:block, oCol, Self )
+      xValue := Eval( oCol:block,, oCol, Self )
       cType  := ValType( xValue )
       nWidth := Len( iif( cType $ "CMNDTL" /*.and. HB_ISSTRING( oCol:picture )*/, ;
          Transform( xValue, oCol:picture ), hb_CStr( xValue ) ) )
