@@ -7,6 +7,15 @@
    Entries may not always be in chronological/commit order.
    See license at the end of file. */
 
+2026-07-07 12:05 UTC+0200 Antonio Linares
+  * include/hbver.h
+  * config/global.mk
+  * package/harbour.spec
+  * package/harbour-win.spec.in
+  * package/harbour-wce.spec.in
+  * package/winuni/mpkg_win_uni.bat
+    * trunk version bump. 3.2.0 -> 3.2.1dev
+
 2026-07-07 12:00 UTC+0200 Antonio Linares
   * include/hbver.h
   * config/global.mk
