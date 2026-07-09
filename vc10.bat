@@ -1,4 +1,4 @@
-SET Path=%~dp0bin\win\msvc;%path%
+SET Path=%~dp0bin\win\msvc;%path%;%~dp0..\h\comp\mingw\bin
 set path=%~dp0;%~dp0..\tools;%~dp0..\ads101\acesdk;%~dp0..\MySQL\LIB;%~dp0..\Firebird;%path%
 set HB_WITH_MYSQL=%~dp0..\MySQL\include
 set HB_WITH_ADS=%~dp0..\ads101\acesdk
@@ -14,4 +14,3 @@ rem set HB_TR_SYSOUT=yes
 SET INCLUDE=%~dp0..\h\comp\VC10\include
 SET LIB=%~dp0..\h\comp\VC10\lib
 SET Path=%~dp0..\h\comp\VC10\bin;%path%
-

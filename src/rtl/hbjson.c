@@ -49,6 +49,7 @@
 #include "hbapistr.h"
 #include "hbset.h"
 #include "hbjson.h"
+#include "hbdate.h"
 
 /*
    The application/json Media Type for JavaScript Object Notation (JSON)
@@ -279,12 +280,13 @@ static void _hb_jsonEncode( PHB_ITEM pValue, PHB_JSON_ENCODE_CTX pCtx,
    }
    else if( HB_IS_DATE( pValue ) )
    {
-      char szBuffer[ 10 ];
+      char szBuffer[ 12 ];
 
-      hb_itemGetDS( pValue, szBuffer + 1 );
+      hb_dateFormat( hb_itemGetDS( pValue, szBuffer + 3 ), szBuffer + 1, "YYYY-MM-DD" );
+      //hb_itemGetDS( pValue, szBuffer + 1 );
       szBuffer[ 0 ] = '\"';
-      szBuffer[ 9 ] = '\"';
-      _hb_jsonCtxAdd( pCtx, szBuffer, 10 );
+      szBuffer[ 11 ] = '\"';
+      _hb_jsonCtxAdd( pCtx, szBuffer, 12 );
    }
    else if( HB_IS_TIMESTAMP( pValue ) )
    {
