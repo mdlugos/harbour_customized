@@ -1361,9 +1361,9 @@ METHOD doConfigure() CLASS TBrowse
       IF nWidth != NIL
          IF nWidth > 0
             aCol[ _TBCI_COLWIDTH ] := nWidth
-            IF nWidth < aCol[ _TBCI_CELLWIDTH ] .OR. cType == "C"
+            //by MD IF nWidth < aCol[ _TBCI_CELLWIDTH ] .OR. cType == "C"
                aCol[ _TBCI_CELLWIDTH ] := nWidth
-            ENDIF
+            // ENDIF
          ELSE
             aCol[ _TBCI_CELLWIDTH ] := 0
          ENDIF
