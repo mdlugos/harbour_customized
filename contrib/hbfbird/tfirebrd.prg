@@ -720,11 +720,7 @@ METHOD FieldGet( nField ) CLASS TFbQuery
 
       ELSEIF cType == "D"
          IF result != NIL
-<<<<<<< HEAD
-            result := hb_SToD( result )
-=======
             result := hb_SToD( Left( result, 4 ) + SubStr( result, 6, 2 ) + SubStr( result, 9, 2 ) )
->>>>>>> c1941b5994 (2026-09-01 15:52 UTC+0200 Aleksander Czajczynski (hb fki.pl))
          ELSE
             result := hb_SToD()
          ENDIF
