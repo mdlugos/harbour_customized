@@ -17,6 +17,7 @@ rem set HB_TR_LEVEL=debug
 rem set HB_TR_OUTPUT=tracelog.txt
 rem set HB_TR_SYSOUT=yes
 IF EXIST "%VCToolsInstallDir%bin\Hostx64\x64" GOTO EXIT
+"%ProgramFiles%\Microsoft Visual Studio\18\Insiders\VC\Auxiliary\Build\vcvars64.bat"
 "%ProgramFiles%\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars64.bat"
 "%ProgramFiles(x86)%\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat"
 set HB_BUILD_DEBUG=
