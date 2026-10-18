@@ -10,7 +10,7 @@ rem https://github.com/harbour/core/tree/master?tab=readme-ov-file#debugging-opt
 rem set HB_TR_LEVEL=debug
 rem set HB_TR_OUTPUT=tracelog.txt
 rem set HB_TR_SYSOUT=yes
-
+set HB_COMPILER=msvc
 SET INCLUDE=%~dp0..\h\comp\VC10\include
 SET LIB=%~dp0..\h\comp\VC10\lib
 SET Path=%~dp0..\h\comp\VC10\bin;%path%
