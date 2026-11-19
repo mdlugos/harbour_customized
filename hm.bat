@@ -21,6 +21,7 @@ IF EXIST "%VCToolsInstallDir%bin\Hostx64\x64" GOTO EXIT
 "%ProgramFiles%\Microsoft Visual Studio\18\Community\VC\Auxiliary\Build\vcvars64.bat"
 "%ProgramFiles%\Microsoft Visual Studio\2022\Community\VC\Auxiliary\Build\vcvars64.bat"
 "%ProgramFiles(x86)%\Microsoft Visual Studio\2019\Community\VC\Auxiliary\Build\vcvars64.bat"
+%~dp0..\VisualStudio\2019\Community\VC\Auxiliary\Build\vcvars64.bat
 set HB_BUILD_DEBUG=
 set HB_MT=
 SET INCLUDE=%~dp0..\h\comp\VC\include;%~dp0..\h\comp\KITS\include\ucrt;%~dp0..\h\comp\KITS\include\winrt;%~dp0..\h\comp\KITS\include\shared;%~dp0..\h\comp\KITS\include\um;%~dp0..\h\comp\KITS\include\cppwinrt
